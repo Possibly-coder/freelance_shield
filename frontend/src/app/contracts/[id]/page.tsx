@@ -1,0 +1,257 @@
+"use client";
+
+import { useEffect, useState, use } from "react";
+import Navbar from "@/components/Navbar";
+import StatusBadge from "@/components/StatusBadge";
+import api from "@/lib/api";
+import { useAuth } from "@/lib/auth";
+import { Contract, Milestone } from "@/lib/types";
+import { Copy, Check, AlertTriangle, Timer } from "lucide-react";
+
+export default function ContractDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
+  const { user } = useAuth();
+  const [contract, setContract] = useState<Contract | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [copied, setCopied] = useState(false);
+  const [actionLoading, setActionLoading] = useState<string | null>(null);
+
+  const fetchContract = async () => {
+    try {
+      const res = await api.get(`/contracts/${id}`);
+      setContract(res.data);
+    } catch {
+      /* contract not found */
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchContract();
+  }, [id]);
+
+  const copyInviteLink = () => {
+    if (!contract) return;
+    const link = `${window.location.origin}/contracts/invite/${contract.invite_token}`;
+    navigator.clipboard.writeText(link);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const fundMilestone = async (milestoneId: string) => {
+    setActionLoading(milestoneId);
+    try {
+      const res = await api.post("/payments/fund", { milestone_id: milestoneId });
+      alert(`Razorpay Order created: ${res.data.order_id}\n\nIn production, this opens the Razorpay checkout. For now, the order ID is logged.`);
+      await fetchContract();
+    } catch {
+      alert("Failed to create payment order");
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const submitMilestone = async (milestoneId: string) => {
+    setActionLoading(milestoneId);
+    try {
+      await api.post(`/milestones/${milestoneId}/submit?description=Work completed`);
+      await fetchContract();
+    } catch {
+      alert("Failed to submit milestone");
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const approveMilestone = async (milestoneId: string) => {
+    setActionLoading(milestoneId);
+    try {
+      await api.post(`/milestones/${milestoneId}/approve`);
+      await fetchContract();
+    } catch {
+      alert("Failed to approve milestone");
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const releaseFunds = async (milestoneId: string) => {
+    setActionLoading(milestoneId);
+    try {
+      await api.post(`/payments/release/${milestoneId}`);
+      await fetchContract();
+    } catch {
+      alert("Failed to release funds");
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const raiseDispute = async (milestoneId: string) => {
+    const reason = prompt("Reason for dispute:");
+    if (!reason) return;
+    setActionLoading(milestoneId);
+    try {
+      await api.post("/disputes/", {
+        contract_id: id,
+        milestone_id: milestoneId,
+        reason,
+      });
+      await fetchContract();
+    } catch {
+      alert("Failed to raise dispute");
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen">
+        <Navbar />
+        <div className="flex items-center justify-center py-32 text-gray-400">Loading...</div>
+      </div>
+    );
+  }
+
+  if (!contract) {
+    return (
+      <div className="min-h-screen">
+        <Navbar />
+        <div className="flex items-center justify-center py-32 text-gray-400">Contract not found</div>
+      </div>
+    );
+  }
+
+  const isClient = user?.id === contract.client_id;
+  const isFreelancer = user?.id === contract.freelancer_id;
+
+  const getMilestoneActions = (m: Milestone) => {
+    const actions: { label: string; onClick: () => void; variant: string }[] = [];
+    const isLoading = actionLoading === m.id;
+
+    if (isClient && m.status === "pending") {
+      actions.push({ label: isLoading ? "..." : "Fund", onClick: () => fundMilestone(m.id), variant: "btn-primary" });
+    }
+    if (isFreelancer && (m.status === "funded" || m.status === "in_progress")) {
+      actions.push({ label: isLoading ? "..." : "Submit", onClick: () => submitMilestone(m.id), variant: "btn-primary" });
+    }
+    if (isClient && m.status === "submitted") {
+      actions.push({ label: isLoading ? "..." : "Approve", onClick: () => approveMilestone(m.id), variant: "btn-primary" });
+      actions.push({ label: "Dispute", onClick: () => raiseDispute(m.id), variant: "btn-danger" });
+    }
+    if (isClient && m.status === "approved") {
+      actions.push({ label: isLoading ? "..." : "Release Funds", onClick: () => releaseFunds(m.id), variant: "btn-primary" });
+    }
+    if ((isClient || isFreelancer) && ["funded", "submitted"].includes(m.status)) {
+      actions.push({ label: "Dispute", onClick: () => raiseDispute(m.id), variant: "btn-danger" });
+    }
+
+    return actions;
+  };
+
+  return (
+    <div className="min-h-screen">
+      <Navbar />
+      <main className="max-w-4xl mx-auto px-4 py-8">
+        <div className="flex items-start justify-between mb-6">
+          <div>
+            <h1 className="text-2xl font-bold">{contract.title}</h1>
+            <p className="text-gray-400 mt-1">{contract.description}</p>
+          </div>
+          <StatusBadge status={contract.status} />
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-4 mb-8">
+          <div className="card">
+            <p className="text-sm text-gray-400 mb-1">Client</p>
+            <p className="font-medium">{contract.client?.name || "---"}</p>
+            <p className="text-sm text-gray-500">{contract.client?.email}</p>
+          </div>
+          <div className="card">
+            <p className="text-sm text-gray-400 mb-1">Freelancer</p>
+            {contract.freelancer ? (
+              <>
+                <p className="font-medium">{contract.freelancer.name}</p>
+                <p className="text-sm text-gray-500">{contract.freelancer.email}</p>
+              </>
+            ) : (
+              <div className="flex items-center gap-3 mt-2">
+                <p className="text-amber-400 text-sm">Waiting for freelancer to accept</p>
+                <button onClick={copyInviteLink} className="btn-secondary text-xs flex items-center gap-1">
+                  {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                  {copied ? "Copied!" : "Copy Invite Link"}
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="card mb-4">
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-sm text-gray-400">Total Contract Value</span>
+            <span className="text-xl font-bold">{contract.currency} {contract.total_amount.toLocaleString()}</span>
+          </div>
+        </div>
+
+        <div className="space-y-3">
+          <h2 className="text-lg font-semibold">Milestones</h2>
+          {contract.milestones.map((m, i) => {
+            const actions = getMilestoneActions(m);
+            return (
+              <div key={m.id} className="card">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm text-gray-500 font-mono">#{i + 1}</span>
+                    <h3 className="font-medium">{m.title}</h3>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="font-semibold">{contract.currency} {m.amount.toLocaleString()}</span>
+                    <StatusBadge status={m.status} />
+                  </div>
+                </div>
+                {m.description && <p className="text-sm text-gray-400 mb-3">{m.description}</p>}
+                {m.due_date && <p className="text-xs text-gray-500 mb-3">Due: {new Date(m.due_date).toLocaleDateString()}</p>}
+
+                {m.status === "submitted" && m.auto_release_at && (() => {
+                  const releaseDate = new Date(m.auto_release_at);
+                  const now = new Date();
+                  const daysLeft = Math.max(0, Math.ceil((releaseDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
+                  return (
+                    <div className={`flex items-center gap-2 text-sm mb-3 px-3 py-2 rounded-lg ${
+                      daysLeft <= 2
+                        ? "bg-amber-900/30 border border-amber-800 text-amber-400"
+                        : "bg-blue-900/20 border border-blue-900 text-blue-400"
+                    }`}>
+                      <Timer className="w-4 h-4" />
+                      {daysLeft === 0
+                        ? isClient
+                          ? "Auto-releasing today -- approve or raise a dispute now"
+                          : "Funds auto-release today!"
+                        : isClient
+                          ? `${daysLeft} day${daysLeft !== 1 ? "s" : ""} to review before auto-release to freelancer`
+                          : `Funds auto-release in ${daysLeft} day${daysLeft !== 1 ? "s" : ""} if client doesn't respond`
+                      }
+                    </div>
+                  );
+                })()}
+
+                {actions.length > 0 && (
+                  <div className="flex gap-2 pt-3 border-t border-gray-800">
+                    {actions.map((a, j) => (
+                      <button key={j} onClick={a.onClick} className={`${a.variant} text-sm`}>
+                        {a.label === "Dispute" && <AlertTriangle className="w-3 h-3 inline mr-1" />}
+                        {a.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </main>
+    </div>
+  );
+}
