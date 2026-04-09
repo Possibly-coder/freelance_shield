@@ -10,10 +10,16 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 from app.database import Base
 from app.models import User, Contract, Milestone, Payment, Deliverable, Dispute  # noqa: F401
+from app.models import Project, Proposal, Waitlist  # noqa: F401
 
 config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
+
+db_url = os.environ.get("DATABASE_URL", config.get_main_option("sqlalchemy.url"))
+if db_url and db_url.startswith("postgresql://"):
+    db_url = db_url.replace("postgresql://", "postgresql+asyncpg://", 1)
+config.set_main_option("sqlalchemy.url", db_url)
 
 target_metadata = Base.metadata
 
