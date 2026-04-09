@@ -50,3 +50,24 @@ async def join_waitlist(data: WaitlistSignup, db: AsyncSession = Depends(get_db)
 async def waitlist_count(db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(func.count()).select_from(Waitlist))
     return {"count": result.scalar() or 0}
+
+
+@router.get("/list")
+async def list_waitlist(secret: str = "", db: AsyncSession = Depends(get_db)):
+    from app.config import get_settings
+    settings = get_settings()
+    if secret != settings.SECRET_KEY:
+        raise HTTPException(status_code=403, detail="Invalid secret")
+
+    result = await db.execute(select(Waitlist).order_by(Waitlist.created_at.asc()))
+    entries = result.scalars().all()
+    return [
+        {
+            "email": e.email,
+            "name": e.name,
+            "role": e.role.value if e.role else None,
+            "referral_source": e.referral_source,
+            "signed_up": e.created_at.isoformat() if e.created_at else None,
+        }
+        for e in entries
+    ]
