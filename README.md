@@ -5,6 +5,7 @@ Milestone-based freelancer payment escrow platform. Protects both businesses and
 ## Quick Start
 
 ### Prerequisites
+
 - Python 3.11+
 - Node.js 18+
 - Docker & Docker Compose (for Postgres + Redis)
@@ -34,7 +35,7 @@ alembic upgrade head
 uvicorn app.main:app --reload --port 8000
 ```
 
-API docs available at http://localhost:8000/docs
+API docs available at [http://localhost:8000/docs](http://localhost:8000/docs)
 
 ### 3. Frontend
 
@@ -44,7 +45,7 @@ npm install
 npm run dev
 ```
 
-Open http://localhost:3000
+Open [http://localhost:3000](http://localhost:3000)
 
 ## Project Structure
 
@@ -85,3 +86,4 @@ FreelanceShield/
 - **Payments**: Razorpay Route API
 - **Email**: Resend
 - **Storage**: AWS S3 / Cloudflare R2
+
