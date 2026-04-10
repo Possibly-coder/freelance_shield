@@ -6,11 +6,11 @@ export default function ForFreelancersPage() {
   return (
     <PageShell>
       <div className="text-center mb-16">
-        <p className="text-sm font-semibold text-emerald-400/80 tracking-widest uppercase mb-3">For freelancers</p>
+        <p className="text-sm font-semibold text-emerald-600 tracking-widest uppercase mb-3">For freelancers</p>
         <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4">
           Never chase a payment again
         </h1>
-        <p className="text-lg text-gray-400 max-w-2xl mx-auto">
+        <p className="text-lg text-[#6B6560] max-w-2xl mx-auto">
           Your work has value. FreelanceShield makes sure you get paid for it -- on time, every time.
         </p>
       </div>
@@ -25,16 +25,16 @@ export default function ForFreelancersPage() {
           { icon: ShieldCheck, title: "Dispute protection", desc: "If a client unfairly rejects your work, raise a dispute. Funds are frozen and the case is reviewed. You're never left without recourse." },
         ].map((feature) => (
           <div key={feature.title} className="card">
-            <feature.icon className="w-8 h-8 text-emerald-400 mb-4" />
+            <feature.icon className="w-8 h-8 text-emerald-600 mb-4" />
             <h3 className="text-lg font-semibold mb-2">{feature.title}</h3>
-            <p className="text-gray-400 text-sm leading-relaxed">{feature.desc}</p>
+            <p className="text-[#6B6560] text-sm leading-relaxed">{feature.desc}</p>
           </div>
         ))}
       </div>
 
       <div className="glass p-10 text-center glow-blue">
         <h2 className="text-2xl font-bold mb-3">Ready to get paid what you deserve?</h2>
-        <p className="text-gray-400 mb-6">Join the waitlist and be first to access FreelanceShield.</p>
+        <p className="text-[#6B6560] mb-6">Join the waitlist and be first to access FreelanceShield.</p>
         <Link href="/" className="btn-primary text-lg px-8 py-3">Join the Waitlist</Link>
       </div>
     </PageShell>

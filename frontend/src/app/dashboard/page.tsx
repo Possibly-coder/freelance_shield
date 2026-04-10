@@ -26,7 +26,7 @@ export default function DashboardPage() {
   if (authLoading || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-gray-400">Loading...</div>
+        <div className="text-[#6B6560]">Loading...</div>
       </div>
     );
   }
@@ -45,7 +45,7 @@ export default function DashboardPage() {
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-2xl font-bold">Dashboard</h1>
-            <p className="text-gray-400 mt-1">Welcome back, {user?.name}</p>
+            <p className="text-[#6B6560] mt-1">Welcome back, {user?.name}</p>
           </div>
           <Link href="/contracts/new" className="btn-primary flex items-center gap-2">
             <Plus className="w-4 h-4" /> New Contract
@@ -54,40 +54,40 @@ export default function DashboardPage() {
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           <div className="card flex items-center gap-4">
-            <FileText className="w-8 h-8 text-blue-500" />
+            <FileText className="w-8 h-8 text-blue-600" />
             <div>
               <p className="text-2xl font-bold">{stats.total}</p>
-              <p className="text-sm text-gray-400">Contracts</p>
+              <p className="text-sm text-[#6B6560]">Contracts</p>
             </div>
           </div>
           <div className="card flex items-center gap-4">
-            <Clock className="w-8 h-8 text-amber-500" />
+            <Clock className="w-8 h-8 text-amber-600" />
             <div>
               <p className="text-2xl font-bold">{stats.active}</p>
-              <p className="text-sm text-gray-400">Active</p>
+              <p className="text-sm text-[#6B6560]">Active</p>
             </div>
           </div>
           <div className="card flex items-center gap-4">
-            <DollarSign className="w-8 h-8 text-emerald-500" />
+            <DollarSign className="w-8 h-8 text-emerald-600" />
             <div>
               <p className="text-2xl font-bold">{stats.totalValue.toLocaleString()}</p>
-              <p className="text-sm text-gray-400">Total Value</p>
+              <p className="text-sm text-[#6B6560]">Total Value</p>
             </div>
           </div>
           <div className="card flex items-center gap-4">
-            <CheckCircle className="w-8 h-8 text-purple-500" />
+            <CheckCircle className="w-8 h-8 text-violet-600" />
             <div>
               <p className="text-2xl font-bold">{stats.completed}</p>
-              <p className="text-sm text-gray-400">Completed</p>
+              <p className="text-sm text-[#6B6560]">Completed</p>
             </div>
           </div>
         </div>
 
         {contracts.length === 0 ? (
           <div className="card text-center py-16">
-            <FileText className="w-12 h-12 text-gray-600 mx-auto mb-4" />
+            <FileText className="w-12 h-12 text-[#C4BFB8] mx-auto mb-4" />
             <h3 className="text-lg font-medium mb-2">No contracts yet</h3>
-            <p className="text-gray-400 mb-6">Create your first contract and invite a freelancer.</p>
+            <p className="text-[#6B6560] mb-6">Create your first contract and invite a freelancer.</p>
             <Link href="/contracts/new" className="btn-primary">Create Contract</Link>
           </div>
         ) : (
@@ -95,18 +95,18 @@ export default function DashboardPage() {
             <h2 className="text-lg font-semibold mb-4">Your Contracts</h2>
             {contracts.map((contract) => (
               <Link key={contract.id} href={`/contracts/${contract.id}`}
-                className="card block hover:border-gray-700 transition-colors cursor-pointer">
+                className="card block hover:border-[#D4D0C8] transition-colors cursor-pointer">
                 <div className="flex items-center justify-between">
                   <div>
                     <h3 className="font-medium text-lg">{contract.title}</h3>
-                    <p className="text-sm text-gray-400 mt-1">
+                    <p className="text-sm text-[#6B6560] mt-1">
                       {contract.client?.name && `Client: ${contract.client.name}`}
                       {contract.freelancer?.name && ` · Freelancer: ${contract.freelancer.name}`}
                     </p>
                   </div>
                   <div className="text-right">
                     <StatusBadge status={contract.status} />
-                    <p className="text-sm text-gray-400 mt-2">
+                    <p className="text-sm text-[#6B6560] mt-2">
                       {contract.currency} {contract.total_amount.toLocaleString()}
                     </p>
                   </div>

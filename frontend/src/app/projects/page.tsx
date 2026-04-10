@@ -64,7 +64,7 @@ function BrowseProjectsContent() {
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-2xl font-bold">Find Projects</h1>
-            <p className="text-gray-400 mt-1">Browse open projects and submit proposals</p>
+            <p className="text-[#6B6560] mt-1">Browse open projects and submit proposals</p>
           </div>
           {user && (
             <Link href="/projects/new" className="btn-primary">
@@ -75,7 +75,7 @@ function BrowseProjectsContent() {
 
         <form onSubmit={handleSearch} className="flex gap-3 mb-6">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#9C9690]" />
             <input
               type="text"
               value={searchTerm}
@@ -98,12 +98,12 @@ function BrowseProjectsContent() {
         </form>
 
         {loading ? (
-          <div className="text-center py-16 text-gray-400">Loading projects...</div>
+          <div className="text-center py-16 text-[#6B6560]">Loading projects...</div>
         ) : projects.length === 0 ? (
           <div className="card text-center py-16">
-            <Briefcase className="w-12 h-12 text-gray-600 mx-auto mb-4" />
+            <Briefcase className="w-12 h-12 text-[#C4BFB8] mx-auto mb-4" />
             <h3 className="text-lg font-medium mb-2">No projects found</h3>
-            <p className="text-gray-400">
+            <p className="text-[#6B6560]">
               {searchTerm || selectedSkill ? "Try different filters" : "Be the first to post a project!"}
             </p>
           </div>
@@ -111,23 +111,23 @@ function BrowseProjectsContent() {
           <div className="space-y-3">
             {projects.map((project) => (
               <Link key={project.id} href={`/projects/${project.id}`}
-                className="card block hover:border-gray-700 transition-colors cursor-pointer">
+                className="card block hover:border-[#D4D0C8] transition-colors cursor-pointer">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <h3 className="font-semibold text-lg">{project.title}</h3>
-                    <p className="text-sm text-gray-400 mt-1 line-clamp-2">{project.description}</p>
+                    <p className="text-sm text-[#6B6560] mt-1 line-clamp-2">{project.description}</p>
 
                     {project.skills && project.skills.length > 0 && (
                       <div className="flex flex-wrap gap-1.5 mt-3">
                         {project.skills.map((skill) => (
-                          <span key={skill} className="text-xs bg-gray-800 text-gray-300 px-2 py-0.5 rounded-full">
+                          <span key={skill} className="text-xs bg-[#F0EDE8] text-[#1A1A1A] px-2 py-0.5 rounded-full">
                             {skill}
                           </span>
                         ))}
                       </div>
                     )}
 
-                    <div className="flex items-center gap-4 mt-3 text-sm text-gray-500">
+                    <div className="flex items-center gap-4 mt-3 text-sm text-[#9C9690]">
                       {(project.budget_min || project.budget_max) && (
                         <span className="flex items-center gap-1">
                           <DollarSign className="w-3.5 h-3.5" />
@@ -153,7 +153,7 @@ function BrowseProjectsContent() {
 
                   <div className="text-right ml-4">
                     <StatusBadge status={project.status} />
-                    <p className="text-xs text-gray-500 mt-2">
+                    <p className="text-xs text-[#9C9690] mt-2">
                       {new Date(project.created_at).toLocaleDateString()}
                     </p>
                   </div>
@@ -169,7 +169,7 @@ function BrowseProjectsContent() {
 
 export default function BrowseProjectsPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-gray-400">Loading...</div>}>
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-[#6B6560]">Loading...</div>}>
       <BrowseProjectsContent />
     </Suspense>
   );

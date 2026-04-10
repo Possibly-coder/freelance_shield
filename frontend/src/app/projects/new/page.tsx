@@ -69,7 +69,7 @@ export default function NewProjectPage() {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {error && (
-            <div className="bg-red-900/30 border border-red-800 text-red-400 text-sm px-4 py-3 rounded-lg">
+            <div className="bg-red-50 border border-red-200 text-red-600 text-sm px-4 py-3 rounded-lg">
               {error}
             </div>
           )}
@@ -78,13 +78,13 @@ export default function NewProjectPage() {
             <h2 className="text-lg font-semibold">Project Details</h2>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1.5">Title</label>
+              <label className="block text-sm font-medium text-[#1A1A1A] mb-1.5">Title</label>
               <input type="text" value={title} onChange={(e) => setTitle(e.target.value)}
                 className="input-field" placeholder="e.g. Build a mobile app for my restaurant" required />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1.5">Description</label>
+              <label className="block text-sm font-medium text-[#1A1A1A] mb-1.5">Description</label>
               <textarea value={description} onChange={(e) => setDescription(e.target.value)}
                 className="input-field min-h-[150px]"
                 placeholder="Describe what you need built, the requirements, and any relevant details..."
@@ -92,14 +92,14 @@ export default function NewProjectPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1.5">Skills Required</label>
+              <label className="block text-sm font-medium text-[#1A1A1A] mb-1.5">Skills Required</label>
               <div className="flex flex-wrap gap-2">
                 {SKILL_OPTIONS.map((skill) => (
                   <button key={skill} type="button" onClick={() => toggleSkill(skill)}
                     className={`text-sm px-3 py-1.5 rounded-full border transition-colors ${
                       skills.includes(skill)
-                        ? "bg-blue-600 border-blue-500 text-white"
-                        : "bg-gray-800 border-gray-700 text-gray-400 hover:border-gray-600"
+                        ? "bg-blue-600 border-blue-500 text-[#1A1A1A]"
+                        : "bg-[#F0EDE8] border-[#D4D0C8] text-[#6B6560] hover:border-[#C4BFB8]"
                     }`}>
                     {skill}
                     {skills.includes(skill) && <X className="w-3 h-3 inline ml-1" />}
@@ -114,7 +114,7 @@ export default function NewProjectPage() {
 
             <div className="grid grid-cols-3 gap-4">
               <div>
-                <label className="block text-sm text-gray-400 mb-1">Currency</label>
+                <label className="block text-sm text-[#6B6560] mb-1">Currency</label>
                 <select value={currency} onChange={(e) => setCurrency(e.target.value)} className="input-field">
                   <option value="INR">INR</option>
                   <option value="USD">USD</option>
@@ -123,19 +123,19 @@ export default function NewProjectPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm text-gray-400 mb-1">Min Budget</label>
+                <label className="block text-sm text-[#6B6560] mb-1">Min Budget</label>
                 <input type="number" value={budgetMin} onChange={(e) => setBudgetMin(e.target.value)}
                   className="input-field" placeholder="5000" />
               </div>
               <div>
-                <label className="block text-sm text-gray-400 mb-1">Max Budget</label>
+                <label className="block text-sm text-[#6B6560] mb-1">Max Budget</label>
                 <input type="number" value={budgetMax} onChange={(e) => setBudgetMax(e.target.value)}
                   className="input-field" placeholder="25000" />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm text-gray-400 mb-1">Expected Duration</label>
+              <label className="block text-sm text-[#6B6560] mb-1">Expected Duration</label>
               <select value={duration} onChange={(e) => setDuration(e.target.value)} className="input-field w-64">
                 <option value="">Select duration</option>
                 {DURATION_OPTIONS.map((d) => (

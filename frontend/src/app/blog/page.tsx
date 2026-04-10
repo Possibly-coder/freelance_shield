@@ -36,31 +36,31 @@ export default function BlogPage() {
   return (
     <PageShell>
       <div className="text-center mb-16">
-        <p className="text-sm font-semibold text-blue-400/80 tracking-widest uppercase mb-3">Blog</p>
+        <p className="text-sm font-semibold text-blue-600 tracking-widest uppercase mb-3">Blog</p>
         <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4">Thoughts on freelancing & payments</h1>
-        <p className="text-lg text-gray-400 max-w-2xl mx-auto">
+        <p className="text-lg text-[#6B6560] max-w-2xl mx-auto">
           Insights, product updates, and stories from the freelance payment trenches.
         </p>
       </div>
 
       <div className="space-y-4">
         {posts.map((post, i) => (
-          <div key={i} className="card hover:border-[#243656] transition-colors">
+          <div key={i} className="card hover:border-blue-200 transition-colors">
             <div className="flex items-center gap-3 mb-3">
-              <span className="text-xs bg-blue-500/10 text-blue-400 px-2.5 py-0.5 rounded-full border border-blue-500/20 font-medium">
+              <span className="text-xs bg-blue-50 text-blue-600 px-2.5 py-0.5 rounded-full border border-blue-200 font-medium">
                 {post.tag}
               </span>
-              <span className="text-xs text-gray-600">{post.date}</span>
+              <span className="text-xs text-[#C4BFB8]">{post.date}</span>
             </div>
-            <h2 className="text-xl font-bold text-white mb-2">{post.title}</h2>
-            <p className="text-gray-400 text-sm leading-relaxed">{post.excerpt}</p>
+            <h2 className="text-xl font-bold text-[#1A1A1A] mb-2">{post.title}</h2>
+            <p className="text-[#6B6560] text-sm leading-relaxed">{post.excerpt}</p>
           </div>
         ))}
       </div>
 
       <div className="glass p-10 text-center mt-16 glow-blue">
         <h2 className="text-2xl font-bold mb-3">Blog launching soon</h2>
-        <p className="text-gray-400 mb-6">Join the waitlist to get notified when we publish our first posts.</p>
+        <p className="text-[#6B6560] mb-6">Join the waitlist to get notified when we publish our first posts.</p>
         <Link href="/" className="btn-primary text-lg px-8 py-3">Join the Waitlist</Link>
       </div>
     </PageShell>

@@ -6,9 +6,9 @@ export default function PricingPage() {
   return (
     <PageShell>
       <div className="text-center mb-16">
-        <p className="text-sm font-semibold text-blue-400/80 tracking-widest uppercase mb-3">Pricing</p>
+        <p className="text-sm font-semibold text-blue-600 tracking-widest uppercase mb-3">Pricing</p>
         <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4">Simple, transparent pricing</h1>
-        <p className="text-lg text-gray-400 max-w-2xl mx-auto">
+        <p className="text-lg text-[#6B6560] max-w-2xl mx-auto">
           No monthly fees. No hidden charges. You only pay when money moves.
         </p>
       </div>
@@ -17,13 +17,13 @@ export default function PricingPage() {
         {/* Starter */}
         <div className="card">
           <div className="mb-6">
-            <Zap className="w-8 h-8 text-blue-400 mb-3" />
+            <Zap className="w-8 h-8 text-blue-600 mb-3" />
             <h3 className="text-xl font-bold mb-1">Starter</h3>
-            <p className="text-sm text-gray-500">For individual freelancers and clients</p>
+            <p className="text-sm text-[#9C9690]">For individual freelancers and clients</p>
           </div>
           <div className="mb-6">
             <span className="text-4xl font-extrabold">1.5%</span>
-            <span className="text-gray-500 ml-1">per transaction</span>
+            <span className="text-[#9C9690] ml-1">per transaction</span>
           </div>
           <ul className="space-y-3 mb-8">
             {[
@@ -33,8 +33,8 @@ export default function PricingPage() {
               "Dispute resolution",
               "Email notifications",
             ].map((f) => (
-              <li key={f} className="flex items-start gap-2 text-sm text-gray-300">
-                <Check className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
+              <li key={f} className="flex items-start gap-2 text-sm text-[#1A1A1A]">
+                <Check className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
                 {f}
               </li>
             ))}
@@ -44,17 +44,17 @@ export default function PricingPage() {
 
         {/* Pro */}
         <div className="card relative border-blue-500/30">
-          <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-blue-600 text-white text-xs font-semibold rounded-full">
+          <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-blue-600 text-[#1A1A1A] text-xs font-semibold rounded-full">
             Most Popular
           </div>
           <div className="mb-6">
-            <Building className="w-8 h-8 text-blue-400 mb-3" />
+            <Building className="w-8 h-8 text-blue-600 mb-3" />
             <h3 className="text-xl font-bold mb-1">Pro</h3>
-            <p className="text-sm text-gray-500">For agencies and growing teams</p>
+            <p className="text-sm text-[#9C9690]">For agencies and growing teams</p>
           </div>
           <div className="mb-6">
             <span className="text-4xl font-extrabold">1%</span>
-            <span className="text-gray-500 ml-1">per transaction</span>
+            <span className="text-[#9C9690] ml-1">per transaction</span>
           </div>
           <ul className="space-y-3 mb-8">
             {[
@@ -65,8 +65,8 @@ export default function PricingPage() {
               "Contract templates",
               "Payment analytics dashboard",
             ].map((f) => (
-              <li key={f} className="flex items-start gap-2 text-sm text-gray-300">
-                <Check className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
+              <li key={f} className="flex items-start gap-2 text-sm text-[#1A1A1A]">
+                <Check className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
                 {f}
               </li>
             ))}
@@ -77,9 +77,9 @@ export default function PricingPage() {
         {/* Enterprise */}
         <div className="card">
           <div className="mb-6">
-            <Crown className="w-8 h-8 text-amber-400 mb-3" />
+            <Crown className="w-8 h-8 text-amber-600 mb-3" />
             <h3 className="text-xl font-bold mb-1">Enterprise</h3>
-            <p className="text-sm text-gray-500">For large organizations</p>
+            <p className="text-sm text-[#9C9690]">For large organizations</p>
           </div>
           <div className="mb-6">
             <span className="text-4xl font-extrabold">Custom</span>
@@ -94,8 +94,8 @@ export default function PricingPage() {
               "SLA and compliance support",
               "White-label option",
             ].map((f) => (
-              <li key={f} className="flex items-start gap-2 text-sm text-gray-300">
-                <Check className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
+              <li key={f} className="flex items-start gap-2 text-sm text-[#1A1A1A]">
+                <Check className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
                 {f}
               </li>
             ))}
@@ -116,8 +116,8 @@ export default function PricingPage() {
             { q: "What happens to the fee if there's a refund?", a: "If a milestone is refunded before work begins, there's no fee. If a dispute is resolved in favor of the client, the escrowed amount is returned in full." },
           ].map((faq) => (
             <div key={faq.q} className="card">
-              <h3 className="font-semibold text-white mb-2">{faq.q}</h3>
-              <p className="text-sm text-gray-400 leading-relaxed">{faq.a}</p>
+              <h3 className="font-semibold text-[#1A1A1A] mb-2">{faq.q}</h3>
+              <p className="text-sm text-[#6B6560] leading-relaxed">{faq.a}</p>
             </div>
           ))}
         </div>

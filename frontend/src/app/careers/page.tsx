@@ -6,20 +6,20 @@ export default function CareersPage() {
   return (
     <PageShell>
       <div className="text-center mb-16">
-        <p className="text-sm font-semibold text-blue-400/80 tracking-widest uppercase mb-3">Careers</p>
+        <p className="text-sm font-semibold text-blue-600 tracking-widest uppercase mb-3">Careers</p>
         <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4">Join the mission</h1>
-        <p className="text-lg text-gray-400 max-w-2xl mx-auto">
+        <p className="text-lg text-[#6B6560] max-w-2xl mx-auto">
           We&apos;re building the payment infrastructure for the global freelance economy. Want to help?
         </p>
       </div>
 
       <div className="card text-center py-16 mb-12">
-        <Rocket className="w-14 h-14 text-gray-700 mx-auto mb-6" />
+        <Rocket className="w-14 h-14 text-[#6B6560] mx-auto mb-6" />
         <h2 className="text-2xl font-bold mb-3">No open positions right now</h2>
-        <p className="text-gray-400 max-w-md mx-auto mb-6">
+        <p className="text-[#6B6560] max-w-md mx-auto mb-6">
           We&apos;re currently a solo-founder operation. As we grow, we&apos;ll be looking for passionate people who care about fixing freelance payments.
         </p>
-        <p className="text-gray-500 text-sm mb-8">
+        <p className="text-[#9C9690] text-sm mb-8">
           Interested in joining early? Reach out anyway -- we love talking to motivated people.
         </p>
         <Link href="/contact" className="btn-primary">Get in Touch</Link>
@@ -35,7 +35,7 @@ export default function CareersPage() {
           ].map((trait) => (
             <div key={trait.title} className="card">
               <h3 className="font-semibold text-lg mb-2">{trait.title}</h3>
-              <p className="text-gray-400 text-sm leading-relaxed">{trait.desc}</p>
+              <p className="text-[#6B6560] text-sm leading-relaxed">{trait.desc}</p>
             </div>
           ))}
         </div>

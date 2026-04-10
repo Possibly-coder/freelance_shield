@@ -4,9 +4,9 @@ export default function TermsPage() {
   return (
     <PageShell>
       <div className="mb-12">
-        <p className="text-sm font-semibold text-blue-400/80 tracking-widest uppercase mb-3">Legal</p>
+        <p className="text-sm font-semibold text-blue-600 tracking-widest uppercase mb-3">Legal</p>
         <h1 className="text-4xl font-extrabold tracking-tight mb-2">Terms of Service</h1>
-        <p className="text-sm text-gray-500">Last updated: April 2026</p>
+        <p className="text-sm text-[#9C9690]">Last updated: April 2026</p>
       </div>
 
       <div className="prose-custom space-y-8">

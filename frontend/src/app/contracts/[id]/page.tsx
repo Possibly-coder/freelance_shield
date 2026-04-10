@@ -110,7 +110,7 @@ export default function ContractDetailPage({ params }: { params: Promise<{ id: s
     return (
       <div className="min-h-screen">
         <Navbar />
-        <div className="flex items-center justify-center py-32 text-gray-400">Loading...</div>
+        <div className="flex items-center justify-center py-32 text-[#6B6560]">Loading...</div>
       </div>
     );
   }
@@ -119,7 +119,7 @@ export default function ContractDetailPage({ params }: { params: Promise<{ id: s
     return (
       <div className="min-h-screen">
         <Navbar />
-        <div className="flex items-center justify-center py-32 text-gray-400">Contract not found</div>
+        <div className="flex items-center justify-center py-32 text-[#6B6560]">Contract not found</div>
       </div>
     );
   }
@@ -158,27 +158,27 @@ export default function ContractDetailPage({ params }: { params: Promise<{ id: s
         <div className="flex items-start justify-between mb-6">
           <div>
             <h1 className="text-2xl font-bold">{contract.title}</h1>
-            <p className="text-gray-400 mt-1">{contract.description}</p>
+            <p className="text-[#6B6560] mt-1">{contract.description}</p>
           </div>
           <StatusBadge status={contract.status} />
         </div>
 
         <div className="grid md:grid-cols-2 gap-4 mb-8">
           <div className="card">
-            <p className="text-sm text-gray-400 mb-1">Client</p>
+            <p className="text-sm text-[#6B6560] mb-1">Client</p>
             <p className="font-medium">{contract.client?.name || "---"}</p>
-            <p className="text-sm text-gray-500">{contract.client?.email}</p>
+            <p className="text-sm text-[#9C9690]">{contract.client?.email}</p>
           </div>
           <div className="card">
-            <p className="text-sm text-gray-400 mb-1">Freelancer</p>
+            <p className="text-sm text-[#6B6560] mb-1">Freelancer</p>
             {contract.freelancer ? (
               <>
                 <p className="font-medium">{contract.freelancer.name}</p>
-                <p className="text-sm text-gray-500">{contract.freelancer.email}</p>
+                <p className="text-sm text-[#9C9690]">{contract.freelancer.email}</p>
               </>
             ) : (
               <div className="flex items-center gap-3 mt-2">
-                <p className="text-amber-400 text-sm">Waiting for freelancer to accept</p>
+                <p className="text-amber-600 text-sm">Waiting for freelancer to accept</p>
                 <button onClick={copyInviteLink} className="btn-secondary text-xs flex items-center gap-1">
                   {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
                   {copied ? "Copied!" : "Copy Invite Link"}
@@ -190,7 +190,7 @@ export default function ContractDetailPage({ params }: { params: Promise<{ id: s
 
         <div className="card mb-4">
           <div className="flex items-center justify-between mb-1">
-            <span className="text-sm text-gray-400">Total Contract Value</span>
+            <span className="text-sm text-[#6B6560]">Total Contract Value</span>
             <span className="text-xl font-bold">{contract.currency} {contract.total_amount.toLocaleString()}</span>
           </div>
         </div>
@@ -203,7 +203,7 @@ export default function ContractDetailPage({ params }: { params: Promise<{ id: s
               <div key={m.id} className="card">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-3">
-                    <span className="text-sm text-gray-500 font-mono">#{i + 1}</span>
+                    <span className="text-sm text-[#9C9690] font-mono">#{i + 1}</span>
                     <h3 className="font-medium">{m.title}</h3>
                   </div>
                   <div className="flex items-center gap-3">
@@ -211,8 +211,8 @@ export default function ContractDetailPage({ params }: { params: Promise<{ id: s
                     <StatusBadge status={m.status} />
                   </div>
                 </div>
-                {m.description && <p className="text-sm text-gray-400 mb-3">{m.description}</p>}
-                {m.due_date && <p className="text-xs text-gray-500 mb-3">Due: {new Date(m.due_date).toLocaleDateString()}</p>}
+                {m.description && <p className="text-sm text-[#6B6560] mb-3">{m.description}</p>}
+                {m.due_date && <p className="text-xs text-[#9C9690] mb-3">Due: {new Date(m.due_date).toLocaleDateString()}</p>}
 
                 {m.status === "submitted" && m.auto_release_at && (() => {
                   const releaseDate = new Date(m.auto_release_at);
@@ -221,8 +221,8 @@ export default function ContractDetailPage({ params }: { params: Promise<{ id: s
                   return (
                     <div className={`flex items-center gap-2 text-sm mb-3 px-3 py-2 rounded-lg ${
                       daysLeft <= 2
-                        ? "bg-amber-900/30 border border-amber-800 text-amber-400"
-                        : "bg-blue-900/20 border border-blue-900 text-blue-400"
+                        ? "bg-amber-50 border border-amber-200 text-amber-600"
+                        : "bg-blue-50 border border-blue-200 text-blue-600"
                     }`}>
                       <Timer className="w-4 h-4" />
                       {daysLeft === 0
@@ -238,7 +238,7 @@ export default function ContractDetailPage({ params }: { params: Promise<{ id: s
                 })()}
 
                 {actions.length > 0 && (
-                  <div className="flex gap-2 pt-3 border-t border-gray-800">
+                  <div className="flex gap-2 pt-3 border-t border-[#E8E5DF]">
                     {actions.map((a, j) => (
                       <button key={j} onClick={a.onClick} className={`${a.variant} text-sm`}>
                         {a.label === "Dispute" && <AlertTriangle className="w-3 h-3 inline mr-1" />}

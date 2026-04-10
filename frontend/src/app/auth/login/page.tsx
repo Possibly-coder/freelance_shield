@@ -33,27 +33,27 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2 font-bold text-2xl">
-            <Shield className="w-7 h-7 text-blue-500" />
+            <Shield className="w-7 h-7 text-blue-600" />
             FreelanceShield
           </Link>
-          <p className="text-gray-400 mt-2">Sign in to your account</p>
+          <p className="text-[#6B6560] mt-2">Sign in to your account</p>
         </div>
 
         <form onSubmit={handleSubmit} className="card space-y-5">
           {error && (
-            <div className="bg-red-900/30 border border-red-800 text-red-400 text-sm px-4 py-3 rounded-lg">
+            <div className="bg-red-50 border border-red-200 text-red-600 text-sm px-4 py-3 rounded-lg">
               {error}
             </div>
           )}
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1.5">Email</label>
+            <label className="block text-sm font-medium text-[#1A1A1A] mb-1.5">Email</label>
             <input type="email" value={email} onChange={(e) => setEmail(e.target.value)}
               className="input-field" placeholder="you@example.com" required />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1.5">Password</label>
+            <label className="block text-sm font-medium text-[#1A1A1A] mb-1.5">Password</label>
             <input type="password" value={password} onChange={(e) => setPassword(e.target.value)}
               className="input-field" placeholder="Your password" required />
           </div>
@@ -62,9 +62,9 @@ export default function LoginPage() {
             {loading ? "Signing in..." : "Sign in"}
           </button>
 
-          <p className="text-center text-sm text-gray-400">
+          <p className="text-center text-sm text-[#6B6560]">
             Don&apos;t have an account?{" "}
-            <Link href="/auth/signup" className="text-blue-400 hover:text-blue-300">Sign up</Link>
+            <Link href="/auth/signup" className="text-blue-600 hover:text-blue-800">Sign up</Link>
           </p>
         </form>
       </div>

@@ -199,7 +199,7 @@ The freelance economy has a Rs 10,000 crore trust problem.
 
 And neither side has protection.
 
-So I'm building FreelanceShield.
+So a friend of mine is building FreelanceShield.
 
 It's simple:
 → Client creates a contract with milestones

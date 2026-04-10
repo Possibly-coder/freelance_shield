@@ -46,7 +46,7 @@ export default function InvitePage({ params }: { params: Promise<{ token: string
 
   if (loading || authLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center text-gray-400">Loading...</div>
+      <div className="min-h-screen flex items-center justify-center text-[#6B6560]">Loading...</div>
     );
   }
 
@@ -54,7 +54,7 @@ export default function InvitePage({ params }: { params: Promise<{ token: string
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="card text-center max-w-md">
-          <p className="text-red-400 mb-4">{error}</p>
+          <p className="text-red-600 mb-4">{error}</p>
         </div>
       </div>
     );
@@ -67,7 +67,7 @@ export default function InvitePage({ params }: { params: Promise<{ token: string
       {user ? <Navbar /> : (
         <nav className="max-w-6xl mx-auto px-4 h-16 flex items-center">
           <div className="flex items-center gap-2 font-bold text-xl">
-            <Shield className="w-6 h-6 text-blue-500" />
+            <Shield className="w-6 h-6 text-blue-600" />
             FreelanceShield
           </div>
         </nav>
@@ -76,33 +76,33 @@ export default function InvitePage({ params }: { params: Promise<{ token: string
       <main className="max-w-2xl mx-auto px-4 py-16">
         <div className="card text-center">
           <h1 className="text-2xl font-bold mb-2">You&apos;ve been invited to a contract</h1>
-          <p className="text-gray-400 mb-8">Review the details below and accept to get started.</p>
+          <p className="text-[#6B6560] mb-8">Review the details below and accept to get started.</p>
 
           <div className="text-left space-y-4 mb-8">
-            <div className="bg-gray-800/50 rounded-lg p-4">
-              <p className="text-sm text-gray-400">Contract</p>
+            <div className="bg-[#F5F3F0] rounded-lg p-4">
+              <p className="text-sm text-[#6B6560]">Contract</p>
               <p className="font-semibold text-lg">{contract.title}</p>
-              {contract.description && <p className="text-sm text-gray-400 mt-1">{contract.description}</p>}
+              {contract.description && <p className="text-sm text-[#6B6560] mt-1">{contract.description}</p>}
             </div>
 
-            <div className="bg-gray-800/50 rounded-lg p-4 flex justify-between">
+            <div className="bg-[#F5F3F0] rounded-lg p-4 flex justify-between">
               <div>
-                <p className="text-sm text-gray-400">Client</p>
+                <p className="text-sm text-[#6B6560]">Client</p>
                 <p className="font-medium">{contract.client?.name}</p>
               </div>
               <div className="text-right">
-                <p className="text-sm text-gray-400">Total Value</p>
+                <p className="text-sm text-[#6B6560]">Total Value</p>
                 <p className="font-semibold">{contract.currency} {contract.total_amount.toLocaleString()}</p>
               </div>
             </div>
 
             <div>
-              <p className="text-sm text-gray-400 mb-3">Milestones ({contract.milestones.length})</p>
+              <p className="text-sm text-[#6B6560] mb-3">Milestones ({contract.milestones.length})</p>
               <div className="space-y-2">
                 {contract.milestones.map((m, i) => (
-                  <div key={m.id} className="flex justify-between items-center bg-gray-800/30 rounded-lg px-4 py-3">
+                  <div key={m.id} className="flex justify-between items-center bg-[#FAFAF8] rounded-lg px-4 py-3">
                     <div className="flex items-center gap-3">
-                      <span className="text-sm text-gray-500">#{i + 1}</span>
+                      <span className="text-sm text-[#9C9690]">#{i + 1}</span>
                       <span>{m.title}</span>
                     </div>
                     <span className="font-medium">{contract.currency} {m.amount.toLocaleString()}</span>
@@ -113,7 +113,7 @@ export default function InvitePage({ params }: { params: Promise<{ token: string
           </div>
 
           {contract.freelancer_id ? (
-            <div className="flex items-center justify-center gap-2 text-emerald-400">
+            <div className="flex items-center justify-center gap-2 text-emerald-600">
               <CheckCircle className="w-5 h-5" />
               <span>This contract has already been accepted</span>
             </div>
