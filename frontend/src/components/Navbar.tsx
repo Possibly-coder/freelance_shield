@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useAuth } from "@/lib/auth";
 import { Shield, LogOut, Plus, Briefcase, FileText } from "lucide-react";
+import WalletButton from "./WalletButton";
 
 export default function Navbar() {
   const { user, logout } = useAuth();
@@ -30,20 +31,23 @@ export default function Navbar() {
           </div>
         </div>
 
-        {user && (
-          <div className="flex items-center gap-3">
-            <Link href="/projects/new" className="hidden md:flex btn-secondary text-xs items-center gap-1.5">
-              <Briefcase className="w-3.5 h-3.5" /> Post Project
-            </Link>
-            <Link href="/contracts/new" className="btn-primary flex items-center gap-1.5 text-xs">
-              <Plus className="w-3.5 h-3.5" /> New Contract
-            </Link>
-            <span className="hidden md:block text-xs font-semibold text-[#5f5e5e] ml-1">{user.name}</span>
-            <button onClick={logout} className="text-[#c5c5d9] hover:text-[#5f5e5e] transition-colors ml-1">
-              <LogOut className="w-4 h-4" />
-            </button>
-          </div>
-        )}
+        <div className="flex items-center gap-3">
+          {user && (
+            <>
+              <Link href="/projects/new" className="hidden md:flex btn-secondary text-xs items-center gap-1.5">
+                <Briefcase className="w-3.5 h-3.5" /> Post Project
+              </Link>
+              <Link href="/contracts/new" className="hidden md:flex btn-primary items-center gap-1.5 text-xs">
+                <Plus className="w-3.5 h-3.5" /> New Contract
+              </Link>
+              <span className="hidden lg:block text-xs font-semibold text-[#5f5e5e] ml-1">{user.name}</span>
+              <button onClick={logout} className="text-[#c5c5d9] hover:text-[#5f5e5e] transition-colors">
+                <LogOut className="w-4 h-4" />
+              </button>
+            </>
+          )}
+          <WalletButton />
+        </div>
       </div>
     </header>
   );
