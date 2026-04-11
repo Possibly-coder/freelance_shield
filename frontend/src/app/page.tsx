@@ -82,7 +82,7 @@ export default function Home() {
             </h1>
 
             <p className="text-base md:text-lg text-[#5f5e5e] mb-8 max-w-xl mx-auto leading-relaxed">
-              Milestone-based escrow that protects your work and payments. <br className="hidden md:block" /> No 20% fees. Just pure protection.
+              Programmable escrow on Solana. USDC locked until milestones are delivered. <br className="hidden md:block" /> Permissionless auto-release. Portable trust scores. No middleman.
             </p>
 
             {/* Waitlist Form */}
@@ -421,7 +421,7 @@ export default function Home() {
               <Shield className="w-5 h-5 text-[#1f2fe7]" />
               <span className="text-base font-black tracking-tight uppercase">FreelanceShield</span>
             </div>
-            <p className="text-xs text-[#5f5e5e] leading-relaxed max-w-xs">Building the trust infrastructure for the global creative economy.</p>
+            <p className="text-xs text-[#5f5e5e] leading-relaxed max-w-xs">Programmable trust infrastructure for the service economy. Built on Solana.</p>
           </div>
           <div>
             <h6 className="text-[10px] font-bold uppercase tracking-widest text-[#1b1c1c] mb-6">Product</h6>

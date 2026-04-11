@@ -7,8 +7,8 @@ import { SolanaProvider } from "@/lib/solana";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "FreelanceShield - Secure Milestone Payments on Solana",
-  description: "Trustless milestone-based escrow for freelancers. Payments secured on Solana blockchain. No middleman. No 20% fees.",
+  title: "FreelanceShield - Trust Infrastructure for the Service Economy",
+  description: "Programmable escrow on Solana. USDC locked until milestones are delivered. Permissionless auto-release. Portable on-chain trust scores.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
