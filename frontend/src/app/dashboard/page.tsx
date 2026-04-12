@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useAuth } from "@/lib/auth";
 import Navbar from "@/components/Navbar";
 import StatusBadge from "@/components/StatusBadge";
+import TrustScoreCard from "@/components/TrustScoreCard";
 import api from "@/lib/api";
 import { Contract } from "@/lib/types";
 import { FileText, Plus, DollarSign, Clock, CheckCircle } from "lucide-react";
@@ -81,6 +82,10 @@ export default function DashboardPage() {
               <p className="text-sm text-[#6B6560]">Completed</p>
             </div>
           </div>
+        </div>
+
+        <div className="mb-8">
+          <TrustScoreCard />
         </div>
 
         {contracts.length === 0 ? (

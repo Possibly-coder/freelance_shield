@@ -4,7 +4,10 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import api from "@/lib/api";
-import { Trash2, Plus } from "lucide-react";
+import { useAnchorProvider } from "@/lib/useProgram";
+import { createContractOnChain } from "@/lib/program-client";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { Trash2, Plus, Wallet } from "lucide-react";
 
 interface MilestoneForm {
   title: string;
@@ -15,15 +18,18 @@ interface MilestoneForm {
 
 export default function NewContractPage() {
   const router = useRouter();
+  const provider = useAnchorProvider();
+  const { publicKey, connected } = useWallet();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [currency, setCurrency] = useState("INR");
+  const [currency, setCurrency] = useState("USDC");
   const [autoReleaseDays, setAutoReleaseDays] = useState("7");
   const [milestones, setMilestones] = useState<MilestoneForm[]>([
     { title: "", description: "", amount: "", due_date: "" },
   ]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [mode, setMode] = useState<"solana" | "fiat">("solana");
 
   const addMilestone = () => {
     setMilestones([...milestones, { title: "", description: "", amount: "", due_date: "" }]);
@@ -41,31 +47,79 @@ export default function NewContractPage() {
 
   const totalAmount = milestones.reduce((sum, m) => sum + (parseFloat(m.amount) || 0), 0);
 
+  const handleSubmitSolana = async () => {
+    if (!provider || !publicKey) {
+      setError("Connect your Phantom wallet first.");
+      return;
+    }
+
+    const contractId = Date.now();
+    const autoReleaseHours = (parseInt(autoReleaseDays) || 7) * 24;
+    const milestoneAmounts = milestones.map((m) => {
+      const amt = parseFloat(m.amount);
+      return Math.round(amt * 1_000_000); // USDC has 6 decimals
+    });
+
+    const contractPda = await createContractOnChain(
+      provider,
+      contractId,
+      autoReleaseHours,
+      milestoneAmounts,
+    );
+
+    // Also save to backend for searchability
+    await api.post("/contracts/", {
+      title,
+      description,
+      total_amount: totalAmount,
+      currency: "USDC",
+      auto_release_days: parseInt(autoReleaseDays) || 7,
+      milestones: milestones.map((m, i) => ({
+        title: m.title,
+        description: m.description || null,
+        amount: parseFloat(m.amount),
+        due_date: m.due_date || null,
+        position: i,
+      })),
+    }).catch(() => {}); // Backend save is best-effort
+
+    return contractPda.toBase58();
+  };
+
+  const handleSubmitFiat = async () => {
+    const res = await api.post("/contracts/", {
+      title,
+      description,
+      total_amount: totalAmount,
+      currency,
+      auto_release_days: parseInt(autoReleaseDays) || 7,
+      milestones: milestones.map((m, i) => ({
+        title: m.title,
+        description: m.description || null,
+        amount: parseFloat(m.amount),
+        due_date: m.due_date || null,
+        position: i,
+      })),
+    });
+    return res.data.id;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
 
     try {
-      const payload = {
-        title,
-        description,
-        total_amount: totalAmount,
-        currency,
-        auto_release_days: parseInt(autoReleaseDays) || 7,
-        milestones: milestones.map((m, i) => ({
-          title: m.title,
-          description: m.description || null,
-          amount: parseFloat(m.amount),
-          due_date: m.due_date || null,
-          position: i,
-        })),
-      };
-
-      const res = await api.post("/contracts/", payload);
-      router.push(`/contracts/${res.data.id}`);
-    } catch {
-      setError("Failed to create contract. Check all fields.");
+      if (mode === "solana") {
+        const contractAddress = await handleSubmitSolana();
+        router.push(`/contracts/new?created=${contractAddress}`);
+      } else {
+        const id = await handleSubmitFiat();
+        router.push(`/contracts/${id}`);
+      }
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Failed to create contract.";
+      setError(msg);
     } finally {
       setLoading(false);
     }
@@ -74,7 +128,7 @@ export default function NewContractPage() {
   return (
     <div className="min-h-screen">
       <Navbar />
-      <main className="max-w-3xl mx-auto px-4 py-8">
+      <main className="max-w-3xl mx-auto px-4 py-8 pt-24">
         <h1 className="text-2xl font-bold mb-8">Create New Contract</h1>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -83,6 +137,39 @@ export default function NewContractPage() {
               {error}
             </div>
           )}
+
+          {/* Payment mode toggle */}
+          <div className="card">
+            <h2 className="text-lg font-semibold mb-4">Payment Method</h2>
+            <div className="flex gap-3">
+              <button type="button" onClick={() => setMode("solana")}
+                className={`flex-1 p-4 rounded-xl border-2 transition-all text-left ${
+                  mode === "solana"
+                    ? "border-[#1f2fe7] bg-[#1f2fe7]/5"
+                    : "border-[#E8E5DF] hover:border-[#D4D0C8]"
+                }`}>
+                <div className="flex items-center gap-2 mb-1">
+                  <Wallet className="w-4 h-4 text-[#1f2fe7]" />
+                  <span className="font-bold text-sm">Solana Escrow</span>
+                </div>
+                <p className="text-xs text-[#9C9690]">USDC locked on-chain. Trustless. Auto-release if client ghosts.</p>
+                {!connected && mode === "solana" && (
+                  <p className="text-xs text-amber-600 mt-2">Connect wallet in the navbar to use this.</p>
+                )}
+              </button>
+              <button type="button" onClick={() => setMode("fiat")}
+                className={`flex-1 p-4 rounded-xl border-2 transition-all text-left ${
+                  mode === "fiat"
+                    ? "border-[#1f2fe7] bg-[#1f2fe7]/5"
+                    : "border-[#E8E5DF] hover:border-[#D4D0C8]"
+                }`}>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="font-bold text-sm">Fiat (Razorpay)</span>
+                </div>
+                <p className="text-xs text-[#9C9690]">INR/USD via Razorpay. Traditional escrow.</p>
+              </button>
+            </div>
+          </div>
 
           <div className="card space-y-5">
             <h2 className="text-lg font-semibold">Contract Details</h2>
@@ -102,23 +189,32 @@ export default function NewContractPage() {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-[#1A1A1A] mb-1.5">Currency</label>
-                <select value={currency} onChange={(e) => setCurrency(e.target.value)} className="input-field">
-                  <option value="INR">INR</option>
-                  <option value="USD">USD</option>
-                  <option value="EUR">EUR</option>
-                  <option value="GBP">GBP</option>
-                </select>
+                {mode === "solana" ? (
+                  <div className="input-field bg-[#F0EDE8] cursor-not-allowed">USDC (Solana)</div>
+                ) : (
+                  <select value={currency} onChange={(e) => setCurrency(e.target.value)} className="input-field">
+                    <option value="INR">INR</option>
+                    <option value="USD">USD</option>
+                    <option value="EUR">EUR</option>
+                    <option value="GBP">GBP</option>
+                  </select>
+                )}
               </div>
               <div>
                 <label className="block text-sm font-medium text-[#1A1A1A] mb-1.5">Auto-release (days)</label>
                 <select value={autoReleaseDays} onChange={(e) => setAutoReleaseDays(e.target.value)} className="input-field">
+                  <option value="2">2 days</option>
                   <option value="3">3 days</option>
                   <option value="5">5 days</option>
                   <option value="7">7 days (recommended)</option>
                   <option value="14">14 days</option>
                   <option value="30">30 days</option>
                 </select>
-                <p className="text-xs text-[#9C9690] mt-1">If client doesn&apos;t respond after freelancer submits, funds auto-release.</p>
+                <p className="text-xs text-[#9C9690] mt-1">
+                  {mode === "solana"
+                    ? "Permissionless auto-release — anyone can trigger it on-chain after this period."
+                    : "If client doesn't respond after freelancer submits, funds auto-release."}
+                </p>
               </div>
             </div>
           </div>
@@ -149,9 +245,11 @@ export default function NewContractPage() {
                       className="input-field" placeholder="e.g. Design mockups" required />
                   </div>
                   <div>
-                    <label className="block text-sm text-[#6B6560] mb-1">Amount ({currency})</label>
+                    <label className="block text-sm text-[#6B6560] mb-1">
+                      Amount ({mode === "solana" ? "USDC" : currency})
+                    </label>
                     <input type="number" value={m.amount} onChange={(e) => updateMilestone(i, "amount", e.target.value)}
-                      className="input-field" placeholder="5000" required min="1" />
+                      className="input-field" placeholder="500" required min="1" step="0.01" />
                   </div>
                 </div>
 
@@ -171,12 +269,20 @@ export default function NewContractPage() {
 
             <div className="flex justify-between items-center pt-4 border-t border-[#E8E5DF]">
               <span className="text-[#6B6560]">Total Contract Value:</span>
-              <span className="text-xl font-bold">{currency} {totalAmount.toLocaleString()}</span>
+              <span className="text-xl font-bold">
+                {mode === "solana" ? "USDC" : currency} {totalAmount.toLocaleString()}
+              </span>
             </div>
           </div>
 
-          <button type="submit" disabled={loading} className="btn-primary w-full text-lg py-3">
-            {loading ? "Creating..." : "Create Contract"}
+          <button type="submit" disabled={loading || (mode === "solana" && !connected)} className="btn-primary w-full text-lg py-3">
+            {loading
+              ? "Creating on-chain..."
+              : mode === "solana"
+                ? connected
+                  ? "Create Contract on Solana"
+                  : "Connect Wallet to Continue"
+                : "Create Contract"}
           </button>
         </form>
       </main>

@@ -6,8 +6,12 @@ import Navbar from "@/components/Navbar";
 import StatusBadge from "@/components/StatusBadge";
 import api from "@/lib/api";
 import { useAuth } from "@/lib/auth";
+import { useAnchorProvider } from "@/lib/useProgram";
+import { acceptContractOnChain } from "@/lib/program-client";
+import { useWallet } from "@solana/wallet-adapter-react";
 import { Contract } from "@/lib/types";
-import { Shield, CheckCircle } from "lucide-react";
+import { Shield, CheckCircle, Wallet } from "lucide-react";
+import { PublicKey } from "@solana/web3.js";
 
 export default function InvitePage({ params }: { params: Promise<{ token: string }> }) {
   const { token } = use(params);
@@ -26,6 +30,9 @@ export default function InvitePage({ params }: { params: Promise<{ token: string
       .finally(() => setLoading(false));
   }, [token]);
 
+  const provider = useAnchorProvider();
+  const { publicKey, connected } = useWallet();
+
   const handleAccept = async () => {
     if (!user) {
       router.push(`/auth/signup?redirect=/contracts/invite/${token}`);
@@ -34,6 +41,17 @@ export default function InvitePage({ params }: { params: Promise<{ token: string
 
     setAccepting(true);
     try {
+      // Accept on Solana if wallet connected
+      if (provider && publicKey && contract?.client_id) {
+        try {
+          const clientKey = new PublicKey(contract.client_id);
+          const { getContractPda } = await import("@/lib/solana");
+          const contractPda = getContractPda(clientKey, parseInt(contract.id.split("-")[0], 16));
+          await acceptContractOnChain(provider, contractPda);
+        } catch { /* Solana accept is best-effort, backend handles state */ }
+      }
+
+      // Always accept on backend too
       const res = await api.post(`/contracts/invite/${token}/accept`);
       router.push(`/contracts/${res.data.id}`);
     } catch (err: unknown) {
@@ -118,8 +136,10 @@ export default function InvitePage({ params }: { params: Promise<{ token: string
               <span>This contract has already been accepted</span>
             </div>
           ) : (
-            <button onClick={handleAccept} disabled={accepting} className="btn-primary w-full text-lg py-3">
-              {accepting ? "Accepting..." : user ? "Accept Contract" : "Sign up to Accept"}
+            <button onClick={handleAccept} disabled={accepting} className="btn-primary w-full text-lg py-3 flex items-center justify-center gap-2">
+              {accepting ? "Accepting..." : user
+                ? <>{connected && <Wallet className="w-5 h-5" />} Accept Contract {connected ? "(on Solana)" : ""}</>
+                : "Sign up to Accept"}
             </button>
           )}
         </div>
