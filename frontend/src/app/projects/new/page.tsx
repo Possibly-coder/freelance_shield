@@ -64,7 +64,7 @@ export default function NewProjectPage() {
   return (
     <div className="min-h-screen">
       <Navbar />
-      <main className="max-w-3xl mx-auto px-4 py-8">
+      <main className="max-w-3xl mx-auto px-6 pt-24 pb-8">
         <h1 className="text-2xl font-bold mb-8">Post a Project</h1>
 
         <form onSubmit={handleSubmit} className="space-y-6">

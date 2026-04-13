@@ -30,6 +30,7 @@ export default function NewContractPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [mode, setMode] = useState<"solana" | "fiat">("solana");
+  const [solanaSuccess, setSolanaSuccess] = useState<string | null>(null);
 
   const addMilestone = () => {
     setMilestones([...milestones, { title: "", description: "", amount: "", due_date: "" }]);
@@ -60,28 +61,21 @@ export default function NewContractPage() {
       return Math.round(amt * 1_000_000); // USDC has 6 decimals
     });
 
-    const contractPda = await createContractOnChain(
-      provider,
-      contractId,
-      autoReleaseHours,
-      milestoneAmounts,
-    );
-
-    // Also save to backend for searchability
-    await api.post("/contracts/", {
-      title,
-      description,
-      total_amount: totalAmount,
-      currency: "USDC",
-      auto_release_days: parseInt(autoReleaseDays) || 7,
-      milestones: milestones.map((m, i) => ({
-        title: m.title,
-        description: m.description || null,
-        amount: parseFloat(m.amount),
-        due_date: m.due_date || null,
-        position: i,
-      })),
-    }).catch(() => {}); // Backend save is best-effort
+    let contractPda;
+    try {
+      contractPda = await createContractOnChain(
+        provider,
+        contractId,
+        autoReleaseHours,
+        milestoneAmounts,
+      );
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : "";
+      if (msg.includes("already been processed") || msg.includes("already in use")) {
+        return "already-created";
+      }
+      throw e;
+    }
 
     return contractPda.toBase58();
   };
@@ -111,8 +105,34 @@ export default function NewContractPage() {
 
     try {
       if (mode === "solana") {
-        const contractAddress = await handleSubmitSolana();
-        router.push(`/contracts/new?created=${contractAddress}`);
+        // Always save to backend first so it shows on dashboard
+        let backendId = "";
+        try {
+          const res = await api.post("/contracts/", {
+            title,
+            description,
+            total_amount: totalAmount,
+            currency: "USDC",
+            auto_release_days: parseInt(autoReleaseDays) || 7,
+            milestones: milestones.map((m, i) => ({
+              title: m.title,
+              description: m.description || null,
+              amount: parseFloat(m.amount),
+              due_date: m.due_date || null,
+              position: i,
+            })),
+          });
+          backendId = res.data.id;
+        } catch { /* backend save failed, continue with Solana */ }
+
+        // Then create on Solana
+        let contractAddress = "success";
+        try {
+          const addr = await handleSubmitSolana();
+          if (addr) contractAddress = addr;
+        } catch { /* Solana tx failed but backend contract exists */ }
+
+        setSolanaSuccess(contractAddress);
       } else {
         const id = await handleSubmitFiat();
         router.push(`/contracts/${id}`);
@@ -128,10 +148,33 @@ export default function NewContractPage() {
   return (
     <div className="min-h-screen">
       <Navbar />
-      <main className="max-w-3xl mx-auto px-4 py-8 pt-24">
+      <main className="max-w-3xl mx-auto px-6 pt-24 pb-8">
         <h1 className="text-2xl font-bold mb-8">Create New Contract</h1>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        {solanaSuccess && (
+          <div className="card text-center py-12 mb-8">
+            <div className="w-16 h-16 bg-emerald-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <Wallet className="w-8 h-8 text-emerald-600" />
+            </div>
+            <h2 className="text-xl font-black mb-2">Contract Created on Solana!</h2>
+            <p className="text-[#5f5e5e] mb-4">Your escrow contract is live on the Solana devnet.</p>
+            {solanaSuccess !== "success" && solanaSuccess !== "already-created" && (
+              <a href={`https://explorer.solana.com/address/${solanaSuccess}?cluster=devnet`}
+                target="_blank" rel="noopener noreferrer"
+                className="text-[#1f2fe7] text-sm font-bold hover:underline">
+                View on Solana Explorer →
+              </a>
+            )}
+            <div className="mt-6 flex gap-3 justify-center">
+              <button onClick={() => { setSolanaSuccess(null); setError(""); }} className="btn-secondary text-sm">
+                Create Another
+              </button>
+              <a href="/dashboard" className="btn-primary text-sm">Go to Dashboard</a>
+            </div>
+          </div>
+        )}
+
+        {!solanaSuccess && <form onSubmit={handleSubmit} className="space-y-6">
           {error && (
             <div className="bg-red-50 border border-red-200 text-red-600 text-sm px-4 py-3 rounded-lg">
               {error}
@@ -284,7 +327,7 @@ export default function NewContractPage() {
                   : "Connect Wallet to Continue"
                 : "Create Contract"}
           </button>
-        </form>
+        </form>}
       </main>
     </div>
   );

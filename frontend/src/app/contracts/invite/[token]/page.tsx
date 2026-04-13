@@ -91,7 +91,7 @@ export default function InvitePage({ params }: { params: Promise<{ token: string
         </nav>
       )}
 
-      <main className="max-w-2xl mx-auto px-4 py-16">
+      <main className="max-w-2xl mx-auto px-6 pt-24 pb-16">
         <div className="card text-center">
           <h1 className="text-2xl font-bold mb-2">You&apos;ve been invited to a contract</h1>
           <p className="text-[#6B6560] mb-8">Review the details below and accept to get started.</p>

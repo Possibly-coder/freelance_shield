@@ -80,18 +80,19 @@ export default function ContractDetailPage({ params }: { params: Promise<{ id: s
   const fundMilestoneFiat = async (milestoneId: string) => {
     setActionLoading(milestoneId);
     try {
-      const res = await api.post("/payments/fund", { milestone_id: milestoneId });
-      alert(`Razorpay Order: ${res.data.order_id}`);
+      await api.post("/payments/fund-demo", { milestone_id: milestoneId });
       await fetchContract();
-    } catch { alert("Failed to create payment order"); }
+    } catch { alert("Failed to fund milestone"); }
     finally { setActionLoading(null); }
   };
 
+  const useSolana = (c: Contract | null) => c?.currency === "USDC" && !!provider && !!publicKey;
+
   const submitMilestone = async (milestoneId: string, milestoneIndex: number) => {
-    if (provider && publicKey && contract) {
-      const contractPda = getContractPda(publicKey, parseInt(contract.id.split("-")[0], 16));
+    if (useSolana(contract)) {
+      const contractPda = getContractPda(publicKey!, parseInt(contract!.id.split("-")[0], 16));
       await handleSolanaAction("Submit", milestoneId, milestoneIndex, () =>
-        submitMilestoneOnChain(provider, contractPda, milestoneIndex)
+        submitMilestoneOnChain(provider!, contractPda, milestoneIndex)
       );
     } else {
       setActionLoading(milestoneId);
@@ -104,10 +105,10 @@ export default function ContractDetailPage({ params }: { params: Promise<{ id: s
   };
 
   const approveMilestone = async (milestoneId: string, milestoneIndex: number) => {
-    if (provider && publicKey && contract) {
-      const contractPda = getContractPda(publicKey, parseInt(contract.id.split("-")[0], 16));
+    if (useSolana(contract)) {
+      const contractPda = getContractPda(publicKey!, parseInt(contract!.id.split("-")[0], 16));
       await handleSolanaAction("Approve", milestoneId, milestoneIndex, () =>
-        approveMilestoneOnChain(provider, contractPda, milestoneIndex)
+        approveMilestoneOnChain(provider!, contractPda, milestoneIndex)
       );
     } else {
       setActionLoading(milestoneId);
@@ -120,11 +121,11 @@ export default function ContractDetailPage({ params }: { params: Promise<{ id: s
   };
 
   const releaseFunds = async (milestoneId: string, milestoneIndex: number) => {
-    if (provider && publicKey && contract?.freelancer_id) {
-      const contractPda = getContractPda(publicKey, parseInt(contract.id.split("-")[0], 16));
-      const freelancerKey = new PublicKey(contract.freelancer_id);
+    if (useSolana(contract) && contract?.freelancer_id) {
+      const contractPda = getContractPda(publicKey!, parseInt(contract!.id.split("-")[0], 16));
+      const freelancerKey = new PublicKey(contract!.freelancer_id);
       await handleSolanaAction("Release", milestoneId, milestoneIndex, () =>
-        releaseMilestoneOnChain(provider, contractPda, milestoneIndex, freelancerKey)
+        releaseMilestoneOnChain(provider!, contractPda, milestoneIndex, freelancerKey)
       );
     } else {
       setActionLoading(milestoneId);
@@ -140,14 +141,13 @@ export default function ContractDetailPage({ params }: { params: Promise<{ id: s
     const reason = prompt("Reason for dispute:");
     if (!reason) return;
 
-    if (provider && publicKey && contract) {
-      const contractPda = getContractPda(publicKey, parseInt(contract.id.split("-")[0], 16));
+    if (useSolana(contract)) {
+      const contractPda = getContractPda(publicKey!, parseInt(contract!.id.split("-")[0], 16));
       await handleSolanaAction("Dispute", milestoneId, milestoneIndex, () =>
-        raiseDisputeOnChain(provider, contractPda, milestoneIndex)
+        raiseDisputeOnChain(provider!, contractPda, milestoneIndex)
       );
     }
 
-    // Also save dispute reason to backend
     try {
       await api.post("/disputes/", { contract_id: id, milestone_id: milestoneId, reason });
     } catch { /* best effort */ }
@@ -171,16 +171,18 @@ export default function ContractDetailPage({ params }: { params: Promise<{ id: s
 
   const isClient = user?.id === contract.client_id;
   const isFreelancer = user?.id === contract.freelancer_id;
+  const isSolanaContract = contract.currency === "USDC";
 
   const getMilestoneActions = (m: Milestone, index: number) => {
     const actions: { label: string; onClick: () => void; variant: string; icon?: string }[] = [];
     const isLoading = actionLoading === m.id;
 
     if (isClient && m.status === "pending") {
-      if (connected) {
+      if (isSolanaContract && connected) {
         actions.push({ label: isLoading ? "..." : "Fund on Solana", onClick: () => fundMilestone(m.id, index), variant: "btn-primary", icon: "solana" });
+      } else {
+        actions.push({ label: isLoading ? "..." : "Fund (Razorpay)", onClick: () => fundMilestoneFiat(m.id), variant: "btn-primary" });
       }
-      actions.push({ label: isLoading ? "..." : "Fund (Razorpay)", onClick: () => fundMilestoneFiat(m.id), variant: "btn-secondary" });
     }
     if (isFreelancer && (m.status === "funded" || m.status === "in_progress")) {
       actions.push({ label: isLoading ? "..." : "Submit Work", onClick: () => submitMilestone(m.id, index), variant: "btn-primary" });
@@ -201,7 +203,7 @@ export default function ContractDetailPage({ params }: { params: Promise<{ id: s
   return (
     <div className="min-h-screen">
       <Navbar />
-      <main className="max-w-4xl mx-auto px-4 py-8 pt-24">
+      <main className="max-w-4xl mx-auto px-6 pt-24 pb-8">
         <div className="flex items-start justify-between mb-6">
           <div>
             <h1 className="text-2xl font-bold">{contract.title}</h1>
@@ -211,7 +213,7 @@ export default function ContractDetailPage({ params }: { params: Promise<{ id: s
         </div>
 
         {/* Solana info banner */}
-        {connected && (
+        {connected && isSolanaContract && (
           <div className="card mb-4 bg-[#1f2fe7]/5 border-[#1f2fe7]/20 flex items-center gap-3">
             <Zap className="w-5 h-5 text-[#1f2fe7]" />
             <div>

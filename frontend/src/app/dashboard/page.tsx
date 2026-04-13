@@ -42,15 +42,12 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen">
       <Navbar />
-      <main className="max-w-6xl mx-auto px-4 py-8">
+      <main className="max-w-6xl mx-auto px-6 pt-24 pb-8">
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-2xl font-bold">Dashboard</h1>
             <p className="text-[#6B6560] mt-1">Welcome back, {user?.name}</p>
           </div>
-          <Link href="/contracts/new" className="btn-primary flex items-center gap-2">
-            <Plus className="w-4 h-4" /> New Contract
-          </Link>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">

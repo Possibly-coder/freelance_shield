@@ -117,7 +117,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
   return (
     <div className="min-h-screen">
       <Navbar />
-      <main className="max-w-4xl mx-auto px-4 py-8">
+      <main className="max-w-4xl mx-auto px-6 pt-24 pb-8">
         <div className="flex items-start justify-between mb-6">
           <div>
             <h1 className="text-2xl font-bold">{project.title}</h1>

@@ -1,4 +1,4 @@
-# FreelanceShield -- Growth Strategy: Reaching High-Value Clients
+# FreelanceShield -- Growth Strategy: Reatabching High-Value Clients
 
 The public subreddits and Twitter posts get volume. This doc is about reaching the people with real budgets -- startup founders, agency owners, CTOs, and heads of product who hire freelancers daily.
 

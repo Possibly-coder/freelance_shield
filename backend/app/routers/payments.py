@@ -22,6 +22,43 @@ from app.middleware.auth import get_current_user
 router = APIRouter()
 
 
+@router.post("/fund-demo")
+async def fund_milestone_demo(
+    data: PaymentCreate,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Demo fund -- skips Razorpay, directly marks milestone as funded."""
+    result = await db.execute(
+        select(Milestone).options(selectinload(Milestone.contract)).where(Milestone.id == data.milestone_id)
+    )
+    milestone = result.scalar_one_or_none()
+    if not milestone:
+        raise HTTPException(status_code=404, detail="Milestone not found")
+    if milestone.contract.client_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Only the client can fund milestones")
+    if milestone.status != MilestoneStatus.PENDING:
+        raise HTTPException(status_code=400, detail="Milestone is already funded")
+
+    milestone.status = MilestoneStatus.FUNDED
+    milestone.funded_at = datetime.now(timezone.utc)
+
+    idempotency_key = generate_idempotency_key(milestone.id, PaymentType.ESCROW_IN)
+    payment = Payment(
+        milestone_id=milestone.id,
+        payer_id=current_user.id,
+        payee_id=milestone.contract.freelancer_id,
+        amount=milestone.amount,
+        currency=milestone.contract.currency,
+        type=PaymentType.ESCROW_IN,
+        status=PaymentStatus.CAPTURED,
+        idempotency_key=idempotency_key,
+    )
+    db.add(payment)
+    await db.flush()
+    return {"status": "funded", "milestone_id": str(milestone.id)}
+
+
 @router.post("/fund", response_model=RazorpayOrderOut)
 async def fund_milestone(
     data: PaymentCreate,
